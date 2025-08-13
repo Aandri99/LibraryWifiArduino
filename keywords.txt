@@ -1,0 +1,23 @@
+###########################################
+# Syntax Coloring Map For SCPI-red-pitaya
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+SCPIRedPitaya	KEYWORD1
+UARTInterface	KEYWORD1
+UARTProtocol	KEYWORD1
+ESYSLog	KEYWORD1
+SCPISystem	KEYWORD1
+Value KEYWORD1
+BaseIO KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+
+initStream	KEYWORD2
+
+initSocket      KEYWORD2
