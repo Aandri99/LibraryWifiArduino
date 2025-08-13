@@ -66,55 +66,46 @@ void setup() {
 
   // Bind SCPI to the TCP socket
   rp.initSocket(&client);
+  rp.gen.reset();
+  rp.gen.wave(scpi_rp::GEN_CH_1, scpi_rp::SINE);
+  rp.gen.freq(scpi_rp::GEN_CH_1, 10000);
+  rp.gen.amp(scpi_rp::GEN_CH_1, 0.9);
+  rp.gen.enable(scpi_rp::GEN_CH_1, true);
+  rp.gen.sync(scpi_rp::GEN_CH_1);
 
- scpi_rp::EGENSweepMode mode = scpi_rp::GEN_SWEEP_LINEAR;
-  scpi_rp::EGENSweepDir dir = scpi_rp::GEN_SWEEP_NORMAL;
-  bool state = false;
-  float start = 0;
-  float end = 0;
-  uint64_t time = 0;
-
-  rp.system.log(scpi_rp::CONSOLE);
   if (!rp.acq.control.reset()) {
     Serial.println("Error reset acq");
   }
 
-  scpi_rp::EACQDecimation decimation = scpi_rp::ACQ_DEC_64;
-  if (!rp.acq.settings.decimation(decimation)) {
+  float hysteresis = 0.05;
+  if (!rp.acq.trigger.hysteresis(hysteresis)) {
+    Serial.println("Error set hysteresis");
+  }
+
+  if (!rp.acq.trigger.hysteresisQ(&hysteresis)) {
+    Serial.println("Error get hysteresis");
+  } else {
+    Serial.print("Hysteresis = ");
+    Serial.println(hysteresis);
+  }
+
+  uint32_t decimation = 123;
+  if (!rp.acq.settings.decimationFactor(decimation)) {
     Serial.println("Error set decimation");
   }
 
-  if (!rp.acq.settings.decimationQ(&decimation)) {
+  if (!rp.acq.settings.decimationFactorQ(&decimation)) {
     Serial.println("Error get decimation");
   } else {
     Serial.print("Decimation = ");
     Serial.println(decimation);
   }
 
-  scpi_rp::EACQDataType dt = scpi_rp::ACQ_DT_RAW;
-  if (!rp.acq.settings.units(dt)) {
-    Serial.println("Error set data type");
-  }
-
-  if (!rp.acq.settings.unitsQ(&dt)) {
-    Serial.println("Error get data type");
-  } else {
-    Serial.print("Type = ");
-    Serial.println(dt);
-  }
-  uint32_t b_size = 0;
-  if (!rp.acq.settings.bufferSizeQ(&b_size)) {
-    Serial.println("Error get buffer size");
-  } else {
-    Serial.print("Buffer size = ");
-    Serial.println(b_size);
-  }
-
   if (!rp.acq.control.start()) {
     Serial.println("Error start ADC");
   }
 
-  if (!rp.acq.trigger.trigger(scpi_rp::ACQ_NOW)) {
+  if (!rp.acq.trigger.trigger(scpi_rp::ACQ_CH1_PE)) {
     Serial.println("Error set trigger");
   }
 
@@ -133,18 +124,33 @@ void setup() {
   if (!rp.acq.control.stop()) {
     Serial.println("Error stop ADC");
   }
-
   // Read data
+
+  uint32_t wp = 0;
+  if (!rp.acq.data.writePositionQ(&wp)) {
+    Serial.println("Error get write pointer");
+  } else {
+    Serial.print("Write pointer = ");
+    Serial.println(wp);
+  }
+
+  uint32_t tp = 0;
+  if (!rp.acq.data.triggerPositionQ(&tp)) {
+    Serial.println("Error get trigger pointer");
+  } else {
+    Serial.print("Trigger pointer = ");
+    Serial.println(tp);
+  }
 
   bool last = false;
   float sample = 0;
   int idx = 0;
   while (!last) {
-    rp.acq.data.dataFullBufferQ(scpi_rp::ACQ_CH_1, &sample, &last);
+    rp.acq.data.dataStartEndQ(scpi_rp::ACQ_CH_1, tp, wp, &sample, &last);
     Serial.print(idx++);
     Serial.print(" - ");
     Serial.print(sample, 6);
     Serial.println("");
-}
+  }
 }
 void loop() { delay(1000); }
