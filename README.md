@@ -29,3 +29,15 @@ MIT license, check license.txt for more information
 All text above must be included in any redistribution
 
 To install, use the Arduino Library Manager and search for "SCPI Red Pitaya" and install the library.
+
+## Examples
+
+### WiFi
+
+The library includes several sketches demonstrating WiFi control of a Red Pitaya:
+
+- `examples/Wifi/AnalogIO/AnalogIO.ino`
+- `examples/Wifi/Burst/Burst.ino`
+- `examples/Wifi/DACSine/DACSine.ino`
+- `examples/Wifi/LEDs/LEDs.ino`
+- `examples/Wifi/Acquire/Acquire.ino` – configure the fast ADC and read samples via WiFi.
