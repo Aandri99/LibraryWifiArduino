@@ -47,6 +47,8 @@ class SCPIRedPitaya {
    */
   void initSocket(Stream *serial);
 
+  void setReadTimeout(uint32_t timeout_ms);
+
   SCPIAio aio;
   SCPIDaisy daisy;
   SCPIDio dio;

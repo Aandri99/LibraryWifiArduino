@@ -59,4 +59,10 @@ void SCPIRedPitaya::initSocket(Stream *serial) {
   acq.trigger.setInterface(s);
   acq.dma.settings.setInterface(s);
   acq.dma.data.setInterface(s);
+  }
+
+void SCPIRedPitaya::setReadTimeout(uint32_t timeout_ms) {
+  if (g_base_io) {
+    g_base_io->setReadTimeout(timeout_ms);
+  }
 }

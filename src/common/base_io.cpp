@@ -73,6 +73,10 @@ BaseIO::BaseIO() {
 
 BaseIO::~BaseIO() {}
 
+void BaseIO::setReadTimeout(uint32_t timeout_ms) {
+  m_readTimeoutMs = timeout_ms;
+}
+
 int BaseIO::checkParamSeparator() {
   for (scpi_size i = m_bufferReadPos; i < m_bufferSize; i++) {
     if (m_buffer[i] == SCPI_PARAM_SEPARATOR) {
@@ -95,6 +99,7 @@ int BaseIO::checkCommandSeparator() {
 
 int BaseIO::fillBuffer() {
   int end = -1;
+  unsigned long start = millis();
   while (end == -1) {
     end = checkParamSeparator();
     if (end == -1) {
@@ -103,7 +108,11 @@ int BaseIO::fillBuffer() {
     if (end == -1) {
       scpi_size ret = readToBuffer();
       if (ret == 0) {
-        return -1;
+        if (millis() - start >= m_readTimeoutMs) {
+          return -1;
+        }
+      } else {
+        start = millis();
       }
     }
   }

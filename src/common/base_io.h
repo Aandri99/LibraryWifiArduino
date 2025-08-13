@@ -29,6 +29,8 @@ class BaseIO {
   bool writeNumberU64(uint64_t value);
   bool writeNumber(float value, uint8_t pre, uint8_t post);
 
+  void setReadTimeout(uint32_t timeout_ms);
+
   virtual scpi_size write(const uint8_t *_data, scpi_size _size) = 0;
 
   scpi_size write(const char *_data, scpi_size _size);
@@ -36,17 +38,18 @@ class BaseIO {
   uint64_t atou64_dec(const char *str);
   char *uitoa64_dec(uint64_t value, char *str);
 
- protected:
-  int checkParamSeparator();
-  int checkCommandSeparator();
-  int fillBuffer();
+   protected:
+    int checkParamSeparator();
+    int checkCommandSeparator();
+    int fillBuffer();
 
-  virtual scpi_size readToBuffer() = 0;
+    virtual scpi_size readToBuffer() = 0;
 
-  uint8_t m_buffer[BASE_IO_BUFFER_SIZE];
-  scpi_size m_bufferSize = 0;
-  scpi_size m_bufferReadPos = 0;
-};
+    uint8_t m_buffer[BASE_IO_BUFFER_SIZE];
+    scpi_size m_bufferSize = 0;
+    scpi_size m_bufferReadPos = 0;
+    uint32_t m_readTimeoutMs = 5;
+  };
 
 }  // namespace scpi_rp
 
